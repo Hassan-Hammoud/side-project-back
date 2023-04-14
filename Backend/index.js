@@ -7,6 +7,8 @@ import productRouter from "./routes/productRoute.js";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import middleware from "./middlewares/errorHandler.js";
+import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
 dotenv.config();
 
 const PORT = process.env.PORT || 5000; 
@@ -16,17 +18,13 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-// const express = require("express");
-// const app = express();
-// const server = app.listen(0, () => {
-//   const port = server.address().port;
-//   console.log(`Server is running on port ${port}`);
-// });
+
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(cookieParser());
 app.use(express.json()); 
 
 app.use('/api/user',authRouter);
@@ -41,12 +39,12 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+// const server = app.listen(0, () => {
+//   const port = server.address().port;
+//   console.log(`Server is running in ${process.env.NODE_ENV} on port ${PORT}`);
+// }); 
+
 app.listen(
   PORT,
   console.log(`Server is running in ${process.env.NODE_ENV} on port ${PORT}!!!`)
 );
-
-// const server = app.listen(3000, () => {
-//   const port = server.address().port;
-//   console.log(`Server is running in ${process.env.NODE_ENV} on port ${PORT}`);
-// }); 

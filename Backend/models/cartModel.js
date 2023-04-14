@@ -3,22 +3,32 @@ const { Schema, model } = mongoose;
 
 const CartSchema = new Schema(
   {
-    userId: {
+    // userId: {
+    //   type: String,
+    //   required: true,
+    // },
+
+    // product: [
+    //   {
+    //     productId: {
+    //       type: String,
+    //     },
+    //     quantity: {
+    //       type: Number,
+    //       default: 1,
+    //     },
+    //   },
+    // ],
+
+    userName: {
       type: String,
       required: true,
     },
 
-    product: [
-      {
-        productId: {
-          type: String,
-        },
-        quantity: {
-          type: Number,
-          default: 1,
-        },
-      },
-    ],
+    lastName: {
+      type: String,
+      required: true,
+    },
   },
 
   {

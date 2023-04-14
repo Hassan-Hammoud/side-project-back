@@ -36,6 +36,11 @@ const UserSchema = new Schema(
       default: "User",
     },
 
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+
     cart: {
       type: Array,
       default: [],
@@ -50,6 +55,10 @@ const UserSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
     },
+
+    refreshToken: {
+      tupe: String,
+    }
   },
 
   {
