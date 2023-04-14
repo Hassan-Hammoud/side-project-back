@@ -2,21 +2,92 @@ import slugify from 'slugify';
 import Product from '../models/productModel.js';
 // import fs from "fs";
 import asyncHandler from "express-async-handler";
-
 // Get All Products
 
-const getAllProducts = async (req, res, next) => {
-
-  // console.log(req.query);
+const getAllProducts = asyncHandler(async (req, res) => {
   try {
-     let response = await Product.find();
-    res.status(200).send({ success: true, response });
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({ error: true, error });
-  }
- 
-  };
+
+// Filtring Products
+const queryObj = { ...req.query};
+const excludeFields = ["page","sort","limit","fields"];
+excludeFields.forEach((el) => delete queryObj[el]);
+console.log(queryObj);
+let queryStr = JSON.stringify(queryObj);
+queryStr = queryStr.replace(/\b(gte|gte|lte|lt)\b/g, (match)=> `${match}`);
+
+let query = Product.find(JSON.parse(queryStr));
+
+
+//Sorting
+
+if (req.query.sort) {
+  const sortBy = req.query.sort.split(',').join(' ');
+  query = query.sort(sortBy);
+} else {
+  query = query.sort(".createdAt");
+}
+
+// Limiting the fields
+
+if(req.query.fields) {
+  const fields = req.query.fields.split(",").join(" ");
+  query = query.select(fields);
+} else {
+  query =query.select('-__v');
+}
+
+//pagination  
+
+const page = req.query.page;
+const limit = req.query.limit;
+const skip = (page - 1) * limit;
+query = query.skip(skip).limit(limit);
+if (req.query.page) {
+  const productCount = await Product.countDocuments();
+  if (skip >= productCount) throw new Error("This page doesn't exists");
+}
+console.log(page, limit, skip);
+
+const product = await query;
+res.json(product);
+} catch (error) {
+  console.log(error);
+  res.status(400).send({ error: true, error });
+}
+});
+    //  let response = await Product.find(req.query);
+    // res.status(200).send({ success: true, response });
+
+
+// const getAllProducts = asyncHandler(async (req, res) => {
+//   try {
+//     // Filtering Products
+//     const queryObj = { ...req.query };
+//     const excludeFields = ["page", "sort", "limit", "fields"];
+//     excludeFields.forEach((el) => delete queryObj[el]);
+//     console.log(queryObj);
+
+//     // Update queryObj to use $gte and $lte operators
+//     const { price } = queryObj;
+//     if (price && price.gte) {
+//       queryObj.price.$gte = price.gte;
+//       delete queryObj.price.gte;
+//     }
+//     if (price && price.lte) {
+//       queryObj.price.$lte = price.lte;
+//       delete queryObj.price.lte;
+//     }
+
+//     const query = Product.find(queryObj);
+//     const product = await query;
+//     res.json(product);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).send({ error: true, error });
+//   }
+// });
+
+
 
   
   // get an Product by id
