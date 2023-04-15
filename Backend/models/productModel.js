@@ -9,13 +9,8 @@ const ProductSchema = new Schema(
         trim: true,
     },
 
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-    },
 
+    
     description: {
       type: String,
       required: [true, "Please enter a description"],
@@ -26,31 +21,7 @@ const ProductSchema = new Schema(
       required: [true, "Please enter a product price"]
     },
 
-    category: {
-      type: String,
-      required: [true, "Please enter a category"],
-    },
-
-    brand: {
-      type: String,
-      required: [true, "Please enter a brand"],
-    },
-
-    quantity : {
-      type: Number,
-      required: true,
-    },
-
-    sold: {
-      type: Number,
-      default: 0,
-    },
-
-    images: {
-      type: Array,
-    },
-
-    color: {
+    image: {
       type: String,
       required: true,
     },

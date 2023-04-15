@@ -1,6 +1,6 @@
 import slugify from 'slugify';
 import Product from '../models/productModel.js';
-// import fs from "fs";
+import fs from "fs";
 import asyncHandler from "express-async-handler";
 // Get All Products
 
@@ -107,12 +107,15 @@ res.json(product);
 // Add Product
 
   const addProduct = asyncHandler(async (req, res, next) =>  {
-    let body = req.body;
+    // let body = req.body;
     try {
-      if (req.body.title) {
-        req.body.slug = slugify(req.body.title);
-      }
-      let newProduct = new Product (body);
+      
+      let newProduct = new Product ({
+        title: req.body.title,
+        description: req.body.description,
+        image: req.imagePath,
+        price: req.body.price,
+      });
       let response = await newProduct.save();
       res.status(201).send({ success: true, response });
     } catch (error) {
@@ -123,19 +126,53 @@ res.json(product);
 
   // update Prduct
 
-  const putProduct = async (req, res) => {
-  let id = req.params.id;
-  let data = req.body;
+//   const putProduct = async (req, res) => {
+//   let id = req.params.id;
+//   let data = req.body;
 
+//   try {
+//     if (req.body.title) {
+//       req.body.slug = slugify(req.body.title);
+//     }
+//     console.log("data", data);
+//     let response = await Product.updateOne({ _id: id }, { $set: data });
+//     res.status(200).send({ success: true, response });
+//   } catch (error) {
+//     res.status(400).send({ error: true, error });
+//   }
+// };
+
+const putProduct = async (req, res) => {
   try {
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title);
+    let update = {
+      title: req.body.name,
+      description: req.body.description,
+      image: req.body.imagePath,
+      price: req.body.price,
+    };
+    const product = await Product.findById(req.params.id);
+
+    // check if the Product does not exist
+    if (!product) {
+      return res.status(404).json({ status: 404, message: "Product Not Found" });
     }
-    console.log("data", data);
-    let response = await Product.updateOne({ _id: id }, { $set: data });
-    res.status(200).send({ success: true, response });
+
+    // delete the old image
+    if (req.body.imagePath) {
+      fs.unlinkSync(member.image);
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      { $set: update },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json({ message: updatedProduct });
   } catch (error) {
-    res.status(400).send({ error: true, error });
+    res.json({ err: error.message });
   }
 };
 
