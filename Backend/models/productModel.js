@@ -6,11 +6,9 @@ const ProductSchema = new Schema(
     title: {
       type: String,
       required: [true, "Please enter a product name"],
-        trim: true,
+      trim: true,
     },
 
-
-    
     description: {
       type: String,
       required: [true, "Please enter a description"],
@@ -18,26 +16,19 @@ const ProductSchema = new Schema(
 
     price: {
       type: String,
-      required: [true, "Please enter a product price"]
+      required: [true, "Please enter a product price"],
     },
 
     image: {
       type: String,
       required: true,
     },
-
-    rating: [
-      {
-        star: Number,
-        postedby: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User"
-        },
-      },
-    ],
-
   },
   {
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
     collection: "Products",
     timestamps: true,
   }
